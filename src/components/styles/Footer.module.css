@@ -1,0 +1,240 @@
+/* Footer Styles */
+.footer {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: white;
+  padding: 3rem 0 1rem 0;
+  margin-top: 4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footerContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 2rem;
+}
+
+/* Company Section */
+.companySection {
+  display: flex;
+  flex-direction: column;
+}
+
+.companyInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.companyName {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, #f84464, #ff6b8a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.companyDescription {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  max-width: 400px;
+}
+
+/* Menu Section */
+.menuSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 1rem 0;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(45deg, #f84464, #ff6b8a);
+  border-radius: 1px;
+}
+
+.menuNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.menuLink {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  padding: 0.25rem 0;
+  position: relative;
+}
+
+.menuLink:hover {
+  color: #f84464;
+  transform: translateX(5px);
+}
+
+.menuLink::before {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(45deg, #f84464, #ff6b8a);
+  transition: width 0.3s ease;
+  transform: translateY(-50%);
+}
+
+.menuLink:hover::before {
+  width: 6px;
+}
+
+/* Legal Section */
+.legalSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.legalNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.legalLink {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  padding: 0.25rem 0;
+  position: relative;
+}
+
+.legalLink:hover {
+  color: #f84464;
+  transform: translateX(5px);
+}
+
+.legalLink::before {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(45deg, #f84464, #ff6b8a);
+  transition: width 0.3s ease;
+  transform: translateY(-50%);
+}
+
+.legalLink:hover::before {
+  width: 6px;
+}
+
+/* Copyright Section */
+.copyrightSection {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.5rem;
+}
+
+.copyrightContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.copyrightText {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer {
+    padding: 2rem 0 1rem 0;
+  }
+
+  .footerContainer {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 0 1.5rem;
+  }
+
+  .companyName {
+    font-size: 1.5rem;
+  }
+
+  .companyDescription {
+    max-width: 100%;
+  }
+
+  .sectionTitle {
+    font-size: 1.1rem;
+  }
+
+  .menuNav,
+  .legalNav {
+    gap: 0.5rem;
+  }
+
+  .menuLink,
+  .legalLink {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 1.5rem 0 1rem 0;
+  }
+
+  .footerContainer {
+    padding: 0 1rem;
+    gap: 1.5rem;
+  }
+
+  .companyName {
+    font-size: 1.3rem;
+  }
+
+  .companyDescription {
+    font-size: 0.9rem;
+  }
+
+  .sectionTitle {
+    font-size: 1rem;
+  }
+
+  .menuLink,
+  .legalLink {
+    font-size: 0.9rem;
+  }
+
+  .copyrightText {
+    font-size: 0.8rem;
+  }
+} 
