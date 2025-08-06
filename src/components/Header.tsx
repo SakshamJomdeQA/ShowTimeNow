@@ -60,9 +60,7 @@ interface MovieImage {
   }
   
   // Movie block interface (since each movie is wrapped in "movie_1")
-  interface MovieBlock {
-    movie_1: Movie;
-  }
+  
 
 
 const Header: React.FC<HeaderProps> = ({ data }) => {

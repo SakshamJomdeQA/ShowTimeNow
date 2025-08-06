@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { getEntry } from '../../../../lib/contentstack-utils';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
@@ -421,10 +421,45 @@ export default function MoviePage({ params }: PageProps) {
           setShowtimeData(showtimes);
         }
         
-        // Fetch footer data
-        const footerEntry = await getEntry('footer', 'bltd292fbdfd37f5bcb');
-        const footer = footerEntry as unknown as FooterData;
-        setFooterData(footer);
+        // Create static footer data since footer_page content type doesn't exist
+        const staticFooterData: FooterData = {
+          uid: 'static-footer',
+          company_name: {
+            company_name: 'ShowTimeNow',
+            info: 'ShowTimeNow is a fast, user-friendly platform to book movies, events, and live shows instantly.'
+          },
+          legal: {
+            title: 'Legal',
+            privacy_policy: {
+              title: 'Privacy Policy',
+              href: '/privacy'
+            },
+            terms_of_services: {
+              title: 'Terms of Service',
+              href: '/terms'
+            }
+          },
+          menu: {
+            title: '',
+            homepage: {
+              title: 'Homepage',
+              href: '/'
+            },
+            movies: {
+              title: 'Movies',
+              href: '/movies'
+            },
+            events: {
+              title: 'Events',
+              href: '/events'
+            },
+            shows: {
+              title: 'Shows',
+              href: '/shows'
+            }
+          }
+        };
+        setFooterData(staticFooterData);
         
       } catch (error) {
         console.error('Error loading movie page:', error);
@@ -463,12 +498,12 @@ export default function MoviePage({ params }: PageProps) {
   };
 
   // Function to simulate SSR-like behavior - updates occupancy on refresh
-  const updateShowtimeOccupancy = () => {
+  const updateShowtimeOccupancy = useCallback(() => {
     if (movieData) {
       const updatedShowtimes = generateShowtimes(movieData.movie_name);
       setShowtimeData(updatedShowtimes);
     }
-  };
+  }, [movieData]);
 
   // Update occupancy every 10 minutes to keep patterns stable
   React.useEffect(() => {
@@ -479,7 +514,7 @@ export default function MoviePage({ params }: PageProps) {
 
       return () => clearInterval(interval);
     }
-  }, [movieData]);
+  }, [movieData, updateShowtimeOccupancy]);
 
   if (loading) {
     return (
@@ -654,7 +689,7 @@ export default function MoviePage({ params }: PageProps) {
           ) : (
             <div className="movie-not-found">
               <h1>Movie Not Found</h1>
-              <p>The movie you're looking for doesn't exist.</p>
+              <p>The movie you&apos;re looking for doesn&apos;t exist.</p>
               <Link href="/" className="back-button">Go Back Home</Link>
             </div>
           )}

@@ -39,7 +39,19 @@ export async function GET() {
                 title: string;
                 url: string;
               };
-              theatre_blocks: any[];
+              theatre_blocks: {
+                theatre_blocks: {
+                  theatre_name: string;
+                  group_1: {
+                    timing_1: string;
+                    timing_2: string;
+                    timing_3: string;
+                    timing_4: string;
+                    timing_5: string;
+                    timing_6: string;
+                  };
+                };
+              }[];
             };
           }[];
         };

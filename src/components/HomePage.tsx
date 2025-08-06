@@ -123,9 +123,45 @@ const HomePage = () => {
 
     useEffect(() => {
       const fetchFooter = async () => {
-        const footerEntry = await getEntry('footer', 'bltd292fbdfd37f5bcb');
-        console.log('Footer data:', footerEntry);
-        setFooterData(footerEntry as unknown as FooterData);
+        // Create static footer data since footer_page content type doesn't exist
+        const staticFooterData: FooterData = {
+          uid: 'static-footer',
+          company_name: {
+            company_name: 'ShowTimeNow',
+            info: 'ShowTimeNow is a fast, user-friendly platform to book movies, events, and live shows instantly.'
+          },
+          legal: {
+            title: 'Legal',
+            privacy_policy: {
+              title: 'Privacy Policy',
+              href: '/privacy'
+            },
+            terms_of_services: {
+              title: 'Terms of Service',
+              href: '/terms'
+            }
+          },
+          menu: {
+            title: '',
+            homepage: {
+              title: 'Homepage',
+              href: '/'
+            },
+            movies: {
+              title: 'Movies',
+              href: '/movies'
+            },
+            events: {
+              title: 'Events',
+              href: '/events'
+            },
+            shows: {
+              title: 'Shows',
+              href: '/shows'
+            }
+          }
+        };
+        setFooterData(staticFooterData);
       };
       fetchFooter();
     }, []);
