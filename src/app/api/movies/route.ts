@@ -39,6 +39,7 @@ export async function GET() {
                 title: string;
                 url: string;
               };
+              star_rating?: { value: number };
               theatre_blocks: {
                 theatre_blocks: {
                   theatre_name: string;
@@ -98,7 +99,7 @@ export async function GET() {
               movie_name: movie.movie_name,
               movie_image: movie.movie_image,
               movie_description: 'Now showing in theatres',
-              star_rating: { value: 4.0 },
+              star_rating: movie.star_rating || { value: 4.0 },
               source: 'theatre'
             });
           }

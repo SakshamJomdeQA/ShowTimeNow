@@ -174,27 +174,173 @@
   text-overflow: ellipsis;
 }
 
-.signInSection {
+/* Account Section */
+.accountSection {
   flex-shrink: 0;
+  position: relative;
 }
 
-.signInButton {
+.accountSwitcher {
+  position: relative;
+}
+
+.accountButton {
   background: linear-gradient(45deg, #f84464, #ff6b8a);
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 25px;
-  text-decoration: none;
+  border: none;
   font-weight: 600;
   font-size: 0.9rem;
   transition: all 0.3s ease;
-  border: 2px solid transparent;
-  display: inline-block;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 140px;
 }
 
-.signInButton:hover {
+.accountButton:hover {
   background: linear-gradient(45deg, #e6395c, #f84464);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(248, 68, 100, 0.3);
+}
+
+.accountAvatar {
+  font-size: 1.2rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.accountName {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.accountArrow {
+  transition: transform 0.3s ease;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.accountArrow.rotated {
+  transform: rotate(180deg);
+}
+
+.accountDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  margin-top: 0.5rem;
+  min-width: 200px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.accountOption {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.accountOption:last-child {
+  border-bottom: none;
+}
+
+.accountOption:hover {
+  background: rgba(248, 68, 100, 0.1);
+  transform: translateX(5px);
+}
+
+.accountOption.selected {
+  background: rgba(248, 68, 100, 0.2);
+  border-left: 3px solid #f84464;
+}
+
+.optionAvatar {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  flex-shrink: 0;
+}
+
+.optionInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.optionName {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.optionRole {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.selectedIndicator {
+  color: #f84464;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-left: auto;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Personalization Status Indicator */
+.personalizationStatus {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 8px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+  animation: slideIn 0.3s ease-out;
+  z-index: 1001;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Bottom Row: Navigation Menu */
@@ -260,7 +406,7 @@
     order: 1;
   }
 
-  .signInSection {
+  .accountSection {
     order: 3;
   }
 
@@ -300,8 +446,9 @@
     font-size: 1rem;
   }
 
-  .signInButton {
+  .accountButton {
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
+    min-width: 120px;
   }
 } 

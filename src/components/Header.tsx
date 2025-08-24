@@ -30,6 +30,7 @@ interface HeaderData {
 
 interface HeaderProps {
   data: HeaderData | null;
+  showAccountSwitcher?: boolean;
 }
 
 // Movie image interface
@@ -63,11 +64,14 @@ interface MovieImage {
   
 
 
-const Header: React.FC<HeaderProps> = ({ data }) => {
+const Header: React.FC<HeaderProps> = ({ data, showAccountSwitcher = true }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [allMovies, setAllMovies] = useState<Movie[]>([]);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<string | null>(null);
+  const [personalizationStatus, setPersonalizationStatus] = useState<string>('');
   const router = useRouter();
 
   useEffect(() => {
@@ -120,6 +124,123 @@ const Header: React.FC<HeaderProps> = ({ data }) => {
   const handleSearchBlur = () => {
     setTimeout(() => setShowSearchResults(false), 200);
   };
+
+  const toggleAccountMenu = () => {
+    setIsAccountMenuOpen(!isAccountMenuOpen);
+  };
+
+  const selectAccount = (accountName: string) => {
+    setSelectedAccount(accountName);
+    setIsAccountMenuOpen(false);
+    
+    // Log account switch for debugging
+    console.log('🔄 Account switched to:', accountName);
+    
+    // Get family member data for personalization
+    const familyMember = familyMembers.find(member => member.name === accountName);
+    if (familyMember) {
+      console.log('👤 Family member data:', {
+        name: familyMember.name,
+        age: familyMember.age,
+        gender: familyMember.gender,
+        role: familyMember.role,
+        preferences: familyMember.preferences
+      });
+      
+      // Trigger personalization API call
+      fetchPersonalizedContent(familyMember);
+      
+      // Dispatch custom event for HomePage to listen to
+      const event = new CustomEvent('familyMemberSelected', { detail: familyMember });
+      window.dispatchEvent(event);
+    }
+  };
+
+  // Function to fetch personalized content
+  const fetchPersonalizedContent = async (member: any) => {
+    try {
+      console.log('🎯 Fetching personalized content for:', member.name);
+      
+      const response = await fetch(`/api/personalized-content?memberId=${member.name}&age=${member.age}&gender=${member.gender}&preferences=${member.preferences.join(',')}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Personalized content received:', {
+          member: member.name,
+          success: data.success,
+          recommendationsCount: data.recommendations?.length || 0,
+          watchlistCount: data.watchlist?.length || 0,
+          recentlyWatchedCount: data.recentlyWatched?.length || 0
+        });
+        
+        // Update personalization status
+        setPersonalizationStatus(`✅ Personalized for ${member.name} (${data.recommendations?.length || 0} recommendations)`);
+        
+        // Clear status after 3 seconds
+        setTimeout(() => setPersonalizationStatus(''), 3000);
+        
+        // Update selected account
+        setSelectedAccount(member.name);
+      } else {
+        console.error('❌ Failed to fetch personalized content:', response.status);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching personalized content:', error);
+    }
+  };
+
+  // Close account menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest(`.${styles.accountSwitcher}`)) {
+        setIsAccountMenuOpen(false);
+      }
+    };
+
+    if (isAccountMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isAccountMenuOpen]);
+
+  const familyMembers = [
+    { 
+      name: 'John', 
+      avatar: '👨', 
+      role: 'Parent',
+      age: 45,
+      gender: 'male',
+      preferences: ['action', 'drama', 'thriller']
+    },
+    { 
+      name: 'Sarah', 
+      avatar: '👩', 
+      role: 'Parent',
+      age: 38,
+      gender: 'female',
+      preferences: ['romance', 'comedy', 'drama']
+    },
+    { 
+      name: 'Mike', 
+      avatar: '👦', 
+      role: 'Child',
+      age: 10,
+      gender: 'male',
+      preferences: ['animation', 'anime']
+    },
+    { 
+      name: 'Emma', 
+      avatar: '👧', 
+      role: 'Child',
+      age: 16,
+      gender: 'female',
+      preferences: ['romance', 'comedy', 'fantasy']
+    }
+  ];
 
   if (!data) {
     return <div className={styles.header}>Loading...</div>;
@@ -179,11 +300,61 @@ const Header: React.FC<HeaderProps> = ({ data }) => {
           </form>
         </div>
 
-        <div className={styles.signInSection}>
-          <Link href={data.sign_in.href} className={styles.signInButton}>
-            {data.sign_in.title}
-          </Link>
-        </div>
+        {showAccountSwitcher && (
+          <div className={styles.accountSection}>
+            <div className={styles.accountSwitcher}>
+              <button 
+                className={styles.accountButton}
+                onClick={toggleAccountMenu}
+              >
+                              <span className={styles.accountAvatar}>
+                {selectedAccount ? familyMembers.find(member => member.name === selectedAccount)?.avatar : '👤'}
+              </span>
+              <span className={styles.accountName}>
+                {selectedAccount || 'Use Account'}
+              </span>
+                <svg 
+                  className={`${styles.accountArrow} ${isAccountMenuOpen ? styles.rotated : ''}`}
+                  width="16" 
+                  height="16" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              
+              {/* Personalization Status Indicator */}
+              {personalizationStatus && (
+                <div className={styles.personalizationStatus}>
+                  {personalizationStatus}
+                </div>
+              )}
+              
+              {isAccountMenuOpen && (
+                <div className={styles.accountDropdown}>
+                                  {familyMembers.map((member) => (
+                  <button
+                    key={member.name}
+                    className={`${styles.accountOption} ${selectedAccount === member.name ? styles.selected : ''}`}
+                    onClick={() => selectAccount(member.name)}
+                  >
+                    <span className={styles.optionAvatar}>{member.avatar}</span>
+                    <div className={styles.optionInfo}>
+                      <span className={styles.optionName}>{member.name}</span>
+                      <span className={styles.optionRole}>{member.role}</span>
+                    </div>
+                    {selectedAccount === member.name && (
+                      <span className={styles.selectedIndicator}>✓</span>
+                    )}
+                  </button>
+                ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom Row: Navigation Menu */}

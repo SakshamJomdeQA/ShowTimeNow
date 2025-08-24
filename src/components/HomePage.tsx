@@ -51,7 +51,28 @@ interface MovieBlock {
   movie_1: Movie;
 }
 
-// Recommended movies data interface
+// Family member interface
+interface FamilyMember {
+  name: string;
+  age: number;
+  gender: string;
+  preferences: string[];
+}
+
+// Personalized content interface
+interface PersonalizedContent {
+  movies: Array<{
+    title: string;
+    genre: string;
+    rating: number;
+    image: string;
+    link: string;
+    description: string;
+    personalizedReason: string;
+  }>;
+}
+
+// Recommended movies data interface (for backward compatibility)
 interface RecommendedMoviesData {
   uid: string;
   title: string;
@@ -101,6 +122,8 @@ const HomePage = () => {
   const [data, setData] = useState<HeaderData | null>(null);
   const [moviesData, setMoviesData] = useState<RecommendedMoviesData | null>(null);
   const [footerData, setFooterData] = useState<FooterData | null>(null);
+  const [selectedFamilyMember, setSelectedFamilyMember] = useState<FamilyMember | null>(null);
+  const [personalizedContent, setPersonalizedContent] = useState<PersonalizedContent | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -114,12 +137,59 @@ const HomePage = () => {
 
     useEffect(() => {
       const fetchMovies = async () => {
+        // Default to static movies data if no family member is selected
         const moviesEntry = await getEntry('movies_types', 'bltbc9d353f08052686');
-        console.log('Movies data:', moviesEntry);
+        console.log('Default movies data:', moviesEntry);
         setMoviesData(moviesEntry as unknown as RecommendedMoviesData);
       };
       fetchMovies();
     }, []);
+
+    // Listen for family member selection changes
+    useEffect(() => {
+      const handleFamilyMemberChange = (event: CustomEvent) => {
+        const familyMember = event.detail as FamilyMember;
+        console.log('👤 Family member selected in HomePage:', familyMember);
+        setSelectedFamilyMember(familyMember);
+        
+        // Fetch personalized content for the selected family member
+        fetchPersonalizedContent(familyMember);
+      };
+
+      // Add event listener for family member changes
+      window.addEventListener('familyMemberSelected', handleFamilyMemberChange as EventListener);
+      
+      return () => {
+        window.removeEventListener('familyMemberSelected', handleFamilyMemberChange as EventListener);
+      };
+    }, []);
+
+    // Function to fetch personalized content
+    const fetchPersonalizedContent = async (familyMember: FamilyMember) => {
+      try {
+        console.log('🎯 Fetching personalized content for:', familyMember.name);
+        
+        const response = await fetch(`/api/personalized-content?memberId=${familyMember.name}&age=${familyMember.age}&gender=${familyMember.gender}&preferences=${familyMember.preferences.join(',')}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Personalized content received:', {
+            member: familyMember.name,
+            success: data.success,
+            movieCount: data.movieCount || 0
+          });
+          
+          if (data.success && data.personalizedContent?.movies) {
+            setPersonalizedContent(data.personalizedContent);
+            console.log('🎬 Updated personalized movies:', data.personalizedContent.movies.length);
+          }
+        } else {
+          console.error('❌ Failed to fetch personalized content:', response.status);
+        }
+      } catch (error) {
+        console.error('❌ Error fetching personalized content:', error);
+      }
+    };
 
     useEffect(() => {
       const fetchFooter = async () => {
@@ -168,14 +238,14 @@ const HomePage = () => {
 
   return (
     <div className={styles.homepage}>
-      <Header data={data} />
+      <Header data={data} showAccountSwitcher={true} />
       <main className={styles.mainContent}>
         <div className={styles.homepageContainer}>
-          <RecommendedMovies data={moviesData} />
+          <RecommendedMovies data={moviesData} personalizedContent={personalizedContent} />
         </div>
       </main>
       <Footer data={footerData} />
-    </div>
+    </div>   
   );
 };
 

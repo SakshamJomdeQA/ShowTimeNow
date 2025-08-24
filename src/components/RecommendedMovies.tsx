@@ -5,6 +5,17 @@ import styles from './styles/RecommendedMovies.module.css';
 
 interface RecommendedMoviesProps {
   data: RecommendedMoviesData | null;
+  personalizedContent?: {
+    movies: Array<{
+      title: string;
+      genre: string;
+      rating: number;
+      image: string;
+      link: string;
+      description: string;
+      personalizedReason: string;
+    }>;
+  } | null;
 }
 
   // Recommended movies data interface
@@ -28,7 +39,7 @@ interface RecommendedMoviesProps {
     }[];
   }
 
-const RecommendedMovies: React.FC<RecommendedMoviesProps> = ({ data }) => {
+const RecommendedMovies: React.FC<RecommendedMoviesProps> = ({ data, personalizedContent }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollRight = () => {
@@ -40,40 +51,70 @@ const RecommendedMovies: React.FC<RecommendedMoviesProps> = ({ data }) => {
     }
   };
 
-  if (!data) {
+  // Use personalized content if available, otherwise use default data
+  const moviesToShow = personalizedContent?.movies || data?.movies_blocks || [];
+  const sectionTitle = personalizedContent ? 'Personalized Recommendations' : (data?.title || 'Recommended Movies');
+
+  if (!data && !personalizedContent) {
     return <div>Loading movies...</div>;
   }
 
   return (
     <section className={styles.recommendedSection}>
       <div className={styles.container}>
-        <h2 className={styles.sectionTitle}>{data.title}</h2>
+        <h2 className={styles.sectionTitle}>{sectionTitle}</h2>
         <div className={styles.scrollContainer}>
           <div ref={scrollContainerRef} className={styles.moviesGrid}>
-          {data.movies_blocks.map((block, index: number) => {
-            const movie = block.movie_1;
-            return (
+          {personalizedContent ? (
+            // Render personalized movies
+            personalizedContent.movies.map((movie, index: number) => (
               <div key={index} className={styles.movieCard}>
                 <div className={styles.movieImage}>
                   <img 
-                    src={movie.movie_image.url} 
-                    alt={movie.movie_name}
+                    src={movie.image} 
+                    alt={movie.title}
                     className={styles.poster}
                   />
                 </div>
                 <div className={styles.movieInfo}>
-                  <h3 className={styles.movieTitle}>{movie.movie_name}</h3>
-                  <p className={styles.movieGenre}>{movie.movie_description}</p>
+                  <h3 className={styles.movieTitle}>{movie.title}</h3>
+                  <p className={styles.movieGenre}>{movie.genre}</p>
                   <div className={styles.rating}>
-                    ⭐ {movie.star_rating.value}/5
+                    ⭐ {movie.rating}/5
                   </div>
-                  <Link href={`/movies/${movie.movie_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className={styles.bookButton}>
+                  <Link href={`/movies/${movie.title.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className={styles.bookButton}>
                     Book Now
                   </Link>
                 </div>
               </div>
-            );
-          })}
+            ))
+          ) : (
+            // Render default movies
+            data?.movies_blocks.map((block, index: number) => {
+              const movie = block.movie_1;
+              return (
+                <div key={index} className={styles.movieCard}>
+                  <div className={styles.movieImage}>
+                    <img 
+                      src={movie.movie_image.url} 
+                      alt={movie.movie_name}
+                      className={styles.poster}
+                    />
+                  </div>
+                  <div className={styles.movieInfo}>
+                    <h3 className={styles.movieTitle}>{movie.movie_name}</h3>
+                    <p className={styles.movieGenre}>{movie.movie_description}</p>
+                    <div className={styles.rating}>
+                      ⭐ {movie.star_rating.value}/5
+                    </div>
+                    <Link href={`/movies/${movie.movie_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className={styles.bookButton}>
+                      Book Now
+                    </Link>
+                  </div>
+                </div>
+              );
+            })
+          )}
           </div>
           <button onClick={scrollRight} className={styles.scrollButton}>
             →

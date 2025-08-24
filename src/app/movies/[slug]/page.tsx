@@ -3,6 +3,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { getEntry } from '../../../../lib/contentstack-utils';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
+import SeatBooking from '../../../components/SeatBooking';
 import Link from 'next/link';
 import './movie-detail.css';
 
@@ -21,6 +22,7 @@ interface MovieData {
     title: string;
     url: string;
   };
+  star_rating?: { value: number };
   theatre_blocks: {
     theatre_blocks: {
       theatre_name: string;
@@ -117,6 +119,12 @@ interface PageProps {
 
 export default function MoviePage({ params }: PageProps) {
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
+  const [isSeatBookingOpen, setIsSeatBookingOpen] = useState(false);
+  const [selectedShowtime, setSelectedShowtime] = useState<{
+    theatre: string;
+    time: string;
+    format: string;
+  } | null>(null);
   const [movieData, setMovieData] = useState<MovieData | null>(null);
   const [headerData, setHeaderData] = useState<HeaderData | null>(null);
   const [footerData, setFooterData] = useState<FooterData | null>(null);
@@ -127,9 +135,9 @@ export default function MoviePage({ params }: PageProps) {
   // Function to generate dynamic showtimes for each movie
   const generateShowtimes = (movieName: string): TheatreShowtimes => {
     const baseShowtimes: { [key: string]: string[] } = {
-      'F1 - Movie': [
-        '09:00 AM', '11:30 AM', '02:00 PM', '04:30 PM', '07:00 PM', '09:30 PM'
-      ],
+              'F1 - The Movie': [
+          '09:00 AM', '11:30 AM', '02:00 PM', '04:30 PM', '07:00 PM', '09:30 PM'
+        ],
       'The Great Gatsby': [
         '10:00 AM', '12:30 PM', '03:00 PM', '05:30 PM', '08:00 PM', '10:30 PM'
       ],
@@ -155,7 +163,7 @@ export default function MoviePage({ params }: PageProps) {
     const stableSeed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate() + now.getHours();
 
     theatres.forEach(theatre => {
-      const movieShowtimes = baseShowtimes[movieName] || baseShowtimes['F1 - Movie'];
+              const movieShowtimes = baseShowtimes[movieName] || baseShowtimes['F1 - The Movie'];
       showtimes[theatre] = movieShowtimes.map((time, index) => {
         // Use stable seed for consistent patterns
         const seed = stableSeed + theatre.charCodeAt(0) + index;
@@ -165,7 +173,7 @@ export default function MoviePage({ params }: PageProps) {
         // Generate base occupancy based on movie popularity with more stable ranges
         let baseOccupancy = 0;
         switch (movieName) {
-          case 'F1 - Movie':
+          case 'F1 - The Movie':
             baseOccupancy = 70 + Math.floor(randomValue * 20); // 70-90%
             break;
           case 'The Great Gatsby':
@@ -204,7 +212,7 @@ export default function MoviePage({ params }: PageProps) {
         
         // More stable filling fast logic - only for specific combinations
         const isFillingFast = occupancy >= 88 && (
-          (movieName === 'F1 - Movie' && timeHour >= 18) || 
+                      (movieName === 'F1 - The Movie' && timeHour >= 18) || 
           (movieName === 'Avengers : Age of Ultron' && timeHour >= 18) ||
           (movieName === 'The Great Gatsby' && timeHour >= 20)
         );
@@ -224,8 +232,9 @@ export default function MoviePage({ params }: PageProps) {
 
   // Function to get movie-specific information
   const getMovieInfo = (movieName: string): MovieInfo => {
+    console.log('getMovieInfo called with movieName:', movieName);
     const movieInfoMap: { [key: string]: MovieInfo } = {
-      'F1 - Movie': {
+      'F1 - The Movie': {
         synopsis: 'Experience the thrill of Formula 1 racing like never before in this action-packed movie that takes you behind the scenes of the world\'s most prestigious motorsport championship. Follow the journey of drivers, teams, and the intense competition that defines F1. Witness the speed, strategy, and sheer determination that makes Formula 1 the pinnacle of motorsport.',
         cast: [
           { role: 'Director', name: 'John Smith' },
@@ -235,7 +244,7 @@ export default function MoviePage({ params }: PageProps) {
         ],
         genre: 'Action, Drama, Sports',
         duration: '2h 15m',
-        rating: '4.0/5',
+        rating: '5.0/5',
         releaseYear: '2025'
       },
       'The Great Gatsby': {
@@ -248,7 +257,7 @@ export default function MoviePage({ params }: PageProps) {
         ],
         genre: 'Drama, Romance',
         duration: '2h 23m',
-        rating: '4.2/5',
+        rating: '3.5/5',
         releaseYear: '2013'
       },
       'Avengers : Age of Ultron': {
@@ -261,7 +270,7 @@ export default function MoviePage({ params }: PageProps) {
         ],
         genre: 'Action, Adventure, Sci-Fi',
         duration: '2h 21m',
-        rating: '4.1/5',
+        rating: '4.5/5',
         releaseYear: '2015'
       },
       'Dear Comrade': {
@@ -274,7 +283,7 @@ export default function MoviePage({ params }: PageProps) {
         ],
         genre: 'Drama, Romance',
         duration: '2h 30m',
-        rating: '4.3/5',
+        rating: '3/5',
         releaseYear: '2019'
       },
       'Frankie and Johnny': {
@@ -287,7 +296,7 @@ export default function MoviePage({ params }: PageProps) {
         ],
         genre: 'Comedy, Drama, Romance',
         duration: '1h 58m',
-        rating: '4.4/5',
+        rating: '4/5',
         releaseYear: '1991'
       },
       'The Godfather': {
@@ -300,24 +309,29 @@ export default function MoviePage({ params }: PageProps) {
         ],
         genre: 'Crime, Drama',
         duration: '2h 55m',
-        rating: '4.8/5',
+        rating: '4.5/5',
         releaseYear: '1972'
       }
     };
 
-    return movieInfoMap[movieName] || {
-      synopsis: 'A compelling story that will keep you on the edge of your seat. Experience the magic of cinema with this extraordinary film.',
-      cast: [
-        { role: 'Director', name: 'Unknown Director' },
-        { role: 'Lead Actor', name: 'Unknown Actor' },
-        { role: 'Producer', name: 'Unknown Producer' },
-        { role: 'Cinematographer', name: 'Unknown Cinematographer' }
-      ],
-      genre: 'Drama',
-      duration: '2h 0m',
-      rating: '4.0/5',
-      releaseYear: '2024'
-    };
+    const movieInfo = movieInfoMap[movieName];
+    if (!movieInfo) {
+      console.warn(`Movie info not found for: "${movieName}"`);
+      return {
+        synopsis: 'A compelling story that will keep you on the edge of your seat. Experience the magic of cinema with this extraordinary film.',
+        cast: [
+          { role: 'Director', name: 'Unknown Director' },
+          { role: 'Lead Actor', name: 'Unknown Actor' },
+          { role: 'Producer', name: 'Unknown Producer' },
+          { role: 'Cinematographer', name: 'Unknown Cinematographer' }
+        ],
+        genre: 'Drama',
+        duration: '2h 0m',
+        rating: '4.0/5',
+        releaseYear: '2024'
+      };
+    }
+    return movieInfo;
   };
 
   React.useEffect(() => {
@@ -337,7 +351,9 @@ export default function MoviePage({ params }: PageProps) {
           main_block: {
             theatre_1: {
               sub_blocks: {
-                sub_theatre: MovieData;
+                sub_theatre: MovieData & {
+                  star_rating?: { value: number };
+                };
               }[];
             };
           }[];
@@ -400,6 +416,7 @@ export default function MoviePage({ params }: PageProps) {
               movie = {
                 movie_name: movieItem.movie_name,
                 movie_image: movieItem.movie_image,
+                star_rating: movieItem.star_rating,
                 movie_trailer: {
                   uid: '',
                   title: 'Trailer',
@@ -479,6 +496,16 @@ export default function MoviePage({ params }: PageProps) {
     setIsTrailerOpen(false);
   };
 
+  const openSeatBooking = (theatre: string, time: string, format: string) => {
+    setSelectedShowtime({ theatre, time, format });
+    setIsSeatBookingOpen(true);
+  };
+
+  const closeSeatBooking = () => {
+    setIsSeatBookingOpen(false);
+    setSelectedShowtime(null);
+  };
+
   const scrollToTheatre = () => {
     theatreSectionRef.current?.scrollIntoView({ 
       behavior: 'smooth',
@@ -519,7 +546,7 @@ export default function MoviePage({ params }: PageProps) {
   if (loading) {
     return (
       <div>
-        <Header data={headerData} />
+        <Header data={headerData} showAccountSwitcher={false} />
         <main className="movie-detail-main">
           <div className="movie-detail-container">
             <div className="loading">Loading...</div>
@@ -531,7 +558,7 @@ export default function MoviePage({ params }: PageProps) {
 
   return (
     <div>
-      <Header data={headerData} />
+      <Header data={headerData} showAccountSwitcher={false} />
       <main className="movie-detail-main">
         <div className="movie-detail-container">
           <Link href="/" className="back-button">
@@ -556,8 +583,9 @@ export default function MoviePage({ params }: PageProps) {
                   <div className="movie-meta">
                     <div className="movie-rating">
                       <span className="rating-label">Rating:</span>
-                      <span className="rating-stars">★★★★☆</span>
-                      <span className="rating-text">{getMovieInfo(movieData.movie_name).rating}</span>
+                      <span className="rating-text">
+                        {movieData.star_rating ? `⭐ ${movieData.star_rating.value}/5` : `⭐ ${getMovieInfo(movieData.movie_name).rating}`}
+                      </span>
                     </div>
                     <div className="movie-genre">
                       <span className="genre-label">Genre:</span>
@@ -652,7 +680,7 @@ export default function MoviePage({ params }: PageProps) {
                           <h3 className="theatre-name">{theatreName}</h3>
                           <div className="theatre-info">
                             <span className="theatre-type">Multiplex</span>
-                            <span className="theatre-location">📍 City Center</span>
+                            <span className="theatre-location">📍 Pune, Maharashtra</span>
                           </div>
                         </div>
                         
@@ -667,6 +695,7 @@ export default function MoviePage({ params }: PageProps) {
                               <button 
                                 key={timingIndex} 
                                 className={`showtime-button ${showtime.isFillingFast ? 'filling-fast' : ''}`}
+                                onClick={() => openSeatBooking(theatreName, showtime.time, showtime.format)}
                               >
                                 <span className="time">{showtime.time}</span>
                                 <span className="format">{showtime.format}</span>
@@ -697,6 +726,18 @@ export default function MoviePage({ params }: PageProps) {
       </main>
 
       <Footer data={footerData} />
+
+      {/* Seat Booking Modal */}
+      {isSeatBookingOpen && selectedShowtime && movieData && (
+        <SeatBooking
+          isOpen={isSeatBookingOpen}
+          onClose={closeSeatBooking}
+          movieName={movieData.movie_name}
+          theatreName={selectedShowtime.theatre}
+          showtime={selectedShowtime.time}
+          format={selectedShowtime.format}
+        />
+      )}
 
       {/* Trailer Modal */}
       {isTrailerOpen && movieData && movieData.movie_trailer && movieData.movie_trailer.url && (

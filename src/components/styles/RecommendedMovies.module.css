@@ -131,6 +131,17 @@
   gap: 0.25rem;
 }
 
+.personalizedReason {
+  color: #4a90e2;
+  font-size: 0.8rem;
+  font-style: italic;
+  background: rgba(74, 144, 226, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  margin: 0.25rem 0;
+  text-align: center;
+}
+
 .bookButton {
   display: block;
   background: linear-gradient(45deg, #f84464, #ff6b8a);

@@ -97,12 +97,35 @@ interface FooterData {
   };
 }
 
+// Family member interface
+interface FamilyMember {
+  name: string;
+  age: number;
+  gender: string;
+  preferences: string[];
+}
+
+// Personalized content interface
+interface PersonalizedContent {
+  movies: Array<{
+    title: string;
+    genre: string;
+    rating: number;
+    image: string;
+    link: string;
+    description: string;
+    personalizedReason: string;
+  }>;
+}
+
 const MoviesPage = () => {
   const [data, setData] = useState<HeaderData | null>(null);
   const [moviesData, setMoviesData] = useState<RecommendedMoviesData | null>(null);
   const [footerData, setFooterData] = useState<FooterData | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredMovies, setFilteredMovies] = useState<MovieBlock[]>([]);
+  const [selectedFamilyMember, setSelectedFamilyMember] = useState<FamilyMember | null>(null);
+  const [personalizedContent, setPersonalizedContent] = useState<PersonalizedContent | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -180,13 +203,61 @@ const MoviesPage = () => {
     }
   }, [searchQuery, moviesData]);
 
+  // Listen for family member selection changes
+  useEffect(() => {
+    const handleFamilyMemberChange = (event: CustomEvent) => {
+      const familyMember = event.detail as FamilyMember;
+      console.log('👤 Family member selected in MoviesPage:', familyMember);
+      setSelectedFamilyMember(familyMember);
+      
+      // Fetch personalized content for the selected family member
+      fetchPersonalizedContent(familyMember);
+    };
+
+    // Add event listener for family member changes
+    window.addEventListener('familyMemberSelected', handleFamilyMemberChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('familyMemberSelected', handleFamilyMemberChange as EventListener);
+    };
+  }, []);
+
+  // Function to fetch personalized content
+  const fetchPersonalizedContent = async (familyMember: FamilyMember) => {
+    try {
+      console.log('🎯 Fetching personalized content for:', familyMember.name);
+      
+      const response = await fetch(`/api/personalized-content?memberId=${familyMember.name}&age=${familyMember.age}&gender=${familyMember.gender}&preferences=${familyMember.preferences.join(',')}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Personalized content received in MoviesPage:', {
+          member: familyMember.name,
+          success: data.success,
+          movieCount: data.movieCount || 0
+        });
+        
+        if (data.success && data.personalizedContent?.movies) {
+          setPersonalizedContent(data.personalizedContent);
+          console.log('🎬 Updated personalized movies in MoviesPage:', data.personalizedContent.movies.length);
+        }
+      } else {
+        console.error('❌ Failed to fetch personalized content:', response.status);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching personalized content:', error);
+    }
+  };
+
   return (
     <div>
-      <Header data={data} />
+      <Header data={data} showAccountSwitcher={true} />
       <main className="movies-main">
         <div className="movies-container">
           <div className="movies-header">
-            <h2 className="movies-title">Movies</h2>
+            <h2 className="movies-title">
+              {personalizedContent ? `Personalized Movies for ${selectedFamilyMember?.name}` : 'Movies'}
+            </h2>
             <div className="movies-search">
               <input
                 type="text"
@@ -202,32 +273,58 @@ const MoviesPage = () => {
               </div>
             </div>
           </div>
-          {moviesData && (
+          {(moviesData || personalizedContent) && (
             <div className="movies-grid">
-              {filteredMovies.map((block, index: number) => {
-                const movie = block.movie_1;
-                return (
+              {personalizedContent ? (
+                // Render personalized movies
+                personalizedContent.movies.map((movie, index: number) => (
                   <div key={index} className="movie-card">
                     <div className="movie-image">
                       <img 
-                        src={movie.movie_image.url} 
-                        alt={movie.movie_name}
+                        src={movie.image} 
+                        alt={movie.title}
                         className="movie-poster"
                       />
                     </div>
                     <div className="movie-info">
-                      <h3 className="movie-title">{movie.movie_name}</h3>
-                      <p className="movie-genre">{movie.movie_description}</p>
+                      <h3 className="movie-title">{movie.title}</h3>
+                      <p className="movie-genre">{movie.genre}</p>
                       <div className="movie-rating">
-                        ⭐ {movie.star_rating.value}/5
+                        ⭐ {movie.rating}/5
                       </div>
-                      <Link href={`/movies/${movie.movie_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className="book-button">
+                      <Link href={`/movies/${movie.title.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className="book-button">
                         Book Now
                       </Link>
                     </div>
                   </div>
-                );
-              })}
+                ))
+              ) : (
+                // Render default movies
+                filteredMovies.map((block, index: number) => {
+                  const movie = block.movie_1;
+                  return (
+                    <div key={index} className="movie-card">
+                      <div className="movie-image">
+                        <img 
+                          src={movie.movie_image.url} 
+                          alt={movie.movie_name}
+                          className="movie-poster"
+                        />
+                      </div>
+                      <div className="movie-info">
+                        <h3 className="movie-title">{movie.movie_name}</h3>
+                        <p className="movie-genre">{movie.movie_description}</p>
+                        <div className="movie-rating">
+                          ⭐ {movie.star_rating.value}/5
+                        </div>
+                        <Link href={`/movies/${movie.movie_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className="book-button">
+                          Book Now
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           )}
         </div>
