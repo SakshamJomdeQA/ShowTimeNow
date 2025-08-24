@@ -15,6 +15,7 @@ interface RecommendedMoviesProps {
       description: string;
       personalizedReason: string;
     }>;
+    title?: string;
   } | null;
 }
 
@@ -53,75 +54,140 @@ const RecommendedMovies: React.FC<RecommendedMoviesProps> = ({ data, personalize
 
   // Use personalized content if available, otherwise use default data
   // const moviesToShow = personalizedContent?.movies || data?.movies_blocks || [];
-  const sectionTitle = personalizedContent ? 'Personalized Recommendations' : (data?.title || 'Recommended Movies');
+  const sectionTitle = personalizedContent ? (personalizedContent.title || 'Personalized Recommendations') : (data?.title || 'Recommended Movies');
 
   if (!data && !personalizedContent) {
     return <div>Loading movies...</div>;
   }
 
   return (
-    <section className={styles.recommendedSection}>
-      <div className={styles.container}>
-        <h2 className={styles.sectionTitle}>{sectionTitle}</h2>
-        <div className={styles.scrollContainer}>
-          <div ref={scrollContainerRef} className={styles.moviesGrid}>
-          {personalizedContent ? (
-            // Render personalized movies
-            personalizedContent.movies.map((movie, index: number) => (
-              <div key={index} className={styles.movieCard}>
-                <div className={styles.movieImage}>
-                  <img 
-                    src={movie.image} 
-                    alt={movie.title}
-                    className={styles.poster}
-                  />
-                </div>
-                <div className={styles.movieInfo}>
-                  <h3 className={styles.movieTitle}>{movie.title}</h3>
-                  <p className={styles.movieGenre}>{movie.genre}</p>
-                  <div className={styles.rating}>
-                    ⭐ {movie.rating}/5
-                  </div>
-                  <Link href={`/movies/${movie.title.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className={styles.bookButton}>
-                    Book Now
-                  </Link>
-                </div>
-              </div>
-            ))
-          ) : (
-            // Render default movies
-            data?.movies_blocks.map((block, index: number) => {
-              const movie = block.movie_1;
-              return (
-                <div key={index} className={styles.movieCard}>
-                  <div className={styles.movieImage}>
-                    <img 
-                      src={movie.movie_image.url} 
-                      alt={movie.movie_name}
-                      className={styles.poster}
-                    />
-                  </div>
-                  <div className={styles.movieInfo}>
-                    <h3 className={styles.movieTitle}>{movie.movie_name}</h3>
-                    <p className={styles.movieGenre}>{movie.movie_description}</p>
-                    <div className={styles.rating}>
-                      ⭐ {movie.star_rating.value}/5
+    <>
+      {/* Personalized Section */}
+      {personalizedContent && (
+        <section className={styles.recommendedSection}>
+          <div className={styles.container}>
+            <h2 className={styles.sectionTitle}>{sectionTitle}</h2>
+            <div className={styles.scrollContainer}>
+              <div ref={scrollContainerRef} className={styles.moviesGrid}>
+                {personalizedContent.movies.map((movie, index: number) => (
+                  <div key={`personalized-${index}`} className={styles.movieCard}>
+                    <div className={styles.movieImage}>
+                      <img 
+                        src={movie.image} 
+                        alt={movie.title}
+                        className={styles.poster}
+                      />
                     </div>
-                    <Link href={`/movies/${movie.movie_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className={styles.bookButton}>
-                      Book Now
-                    </Link>
+                    <div className={styles.movieInfo}>
+                      <h3 className={styles.movieTitle}>{movie.title}</h3>
+                      <p className={styles.movieGenre}>{movie.genre}</p>
+                      <div className={styles.rating}>
+                        ⭐ {movie.rating}/5
+                      </div>
+                      <Link href={`/movies/${movie.title.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className={styles.bookButton}>
+                        Book Now
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              );
-            })
-          )}
+                ))}
+              </div>
+              <button onClick={scrollRight} className={styles.scrollButton}>
+                →
+              </button>
+            </div>
           </div>
-          <button onClick={scrollRight} className={styles.scrollButton}>
-            →
-          </button>
-        </div>
-      </div>
-    </section>
+        </section>
+      )}
+
+      {/* Remaining Movies Section */}
+      {personalizedContent && data && (
+        <section className={styles.recommendedSection}>
+          <div className={styles.container}>
+            <h2 className={styles.sectionTitle}>Recommended Movies</h2>
+            <div className={styles.scrollContainer}>
+              <div className={styles.moviesGrid}>
+                {data.movies_blocks.map((block, index: number) => {
+                  const movie = block.movie_1;
+                  // Skip if this movie is already in personalized content
+                  const isAlreadyPersonalized = personalizedContent.movies.some(
+                    personalizedMovie => personalizedMovie.title === movie.movie_name
+                  );
+                  
+                  if (isAlreadyPersonalized) {
+                    return null; // Skip this movie as it's already shown in personalized section
+                  }
+                  
+                  return (
+                    <div key={`remaining-${index}`} className={styles.movieCard}>
+                      <div className={styles.movieImage}>
+                        <img 
+                          src={movie.movie_image.url} 
+                          alt={movie.movie_name}
+                          className={styles.poster}
+                        />
+                      </div>
+                      <div className={styles.movieInfo}>
+                        <h3 className={styles.movieTitle}>{movie.movie_name}</h3>
+                        <p className={styles.movieGenre}>{movie.movie_description}</p>
+                        <div className={styles.rating}>
+                          ⭐ {movie.star_rating.value}/5
+                        </div>
+                        <Link href={`/movies/${movie.movie_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className={styles.bookButton}>
+                          Book Now
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <button onClick={scrollRight} className={styles.scrollButton}>
+                →
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Default Section (when no personalization) */}
+      {!personalizedContent && data && (
+        <section className={styles.recommendedSection}>
+          <div className={styles.container}>
+            <h2 className={styles.sectionTitle}>{data.title || 'Recommended Movies'}</h2>
+            <div className={styles.scrollContainer}>
+              <div className={styles.moviesGrid}>
+                {data.movies_blocks.map((block, index: number) => {
+                  const movie = block.movie_1;
+                  return (
+                    <div key={index} className={styles.movieCard}>
+                      <div className={styles.movieImage}>
+                        <img 
+                          src={movie.movie_image.url} 
+                          alt={movie.movie_name}
+                          className={styles.poster}
+                        />
+                      </div>
+                      <div className={styles.movieInfo}>
+                        <h3 className={styles.movieTitle}>{movie.movie_name}</h3>
+                        <p className={styles.movieGenre}>{movie.movie_description}</p>
+                        <div className={styles.rating}>
+                          ⭐ {movie.star_rating.value}/5
+                        </div>
+                        <Link href={`/movies/${movie.movie_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className={styles.bookButton}>
+                          Book Now
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <button onClick={scrollRight} className={styles.scrollButton}>
+                →
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+    </>
   );
 };
 

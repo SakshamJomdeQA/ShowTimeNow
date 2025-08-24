@@ -116,6 +116,7 @@ interface PersonalizedContent {
     description: string;
     personalizedReason: string;
   }>;
+  title?: string;
 }
 
 const MoviesPage = () => {
@@ -256,7 +257,7 @@ const MoviesPage = () => {
         <div className="movies-container">
           <div className="movies-header">
             <h2 className="movies-title">
-              {personalizedContent ? `Personalized Movies for ${selectedFamilyMember?.name}` : 'Movies'}
+              {personalizedContent ? (personalizedContent.title || `Personalized Movies for ${selectedFamilyMember?.name}`) : 'Movies'}
             </h2>
             <div className="movies-search">
               <input
@@ -273,60 +274,84 @@ const MoviesPage = () => {
               </div>
             </div>
           </div>
-          {(moviesData || personalizedContent) && (
-            <div className="movies-grid">
-              {personalizedContent ? (
-                // Render personalized movies
-                personalizedContent.movies.map((movie, index: number) => (
-                  <div key={index} className="movie-card">
-                    <div className="movie-image">
-                      <img 
-                        src={movie.image} 
-                        alt={movie.title}
-                        className="movie-poster"
-                      />
-                    </div>
-                    <div className="movie-info">
-                      <h3 className="movie-title">{movie.title}</h3>
-                      <p className="movie-genre">{movie.genre}</p>
-                      <div className="movie-rating">
-                        ⭐ {movie.rating}/5
-                      </div>
-                      <Link href={`/movies/${movie.title.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className="book-button">
-                        Book Now
-                      </Link>
+                      {(moviesData || personalizedContent) && (
+              <>
+                {/* Personalized Movies Section */}
+                {personalizedContent && (
+                  <div className="movies-section">
+                    <h3 className="section-subtitle">Personalized for You</h3>
+                    <div className="movies-grid">
+                      {personalizedContent.movies.map((movie, index: number) => (
+                        <div key={`personalized-${index}`} className="movie-card">
+                          <div className="movie-image">
+                            <img 
+                              src={movie.image} 
+                              alt={movie.title}
+                              className="movie-poster"
+                            />
+                          </div>
+                          <div className="movie-info">
+                            <h3 className="movie-title">{movie.title}</h3>
+                            <p className="movie-genre">{movie.genre}</p>
+                            <div className="movie-rating">
+                              ⭐ {movie.rating}/5
+                            </div>
+                            <Link href={`/movies/${movie.title.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className="book-button">
+                              Book Now
+                            </Link>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))
-              ) : (
-                // Render default movies
-                filteredMovies.map((block, index: number) => {
-                  const movie = block.movie_1;
-                  return (
-                    <div key={index} className="movie-card">
-                      <div className="movie-image">
-                        <img 
-                          src={movie.movie_image.url} 
-                          alt={movie.movie_name}
-                          className="movie-poster"
-                        />
-                      </div>
-                      <div className="movie-info">
-                        <h3 className="movie-title">{movie.movie_name}</h3>
-                        <p className="movie-genre">{movie.movie_description}</p>
-                        <div className="movie-rating">
-                          ⭐ {movie.star_rating.value}/5
+                )}
+
+                          {/* All Movies Section */}
+          <div className="movies-section">
+            <h3 className="section-subtitle">
+              {personalizedContent ? 'Recommended Movies' : 'Movies'}
+            </h3>
+                  <div className="movies-grid">
+                    {filteredMovies.map((block, index: number) => {
+                      const movie = block.movie_1;
+                      
+                      // Skip if this movie is already in personalized content
+                      if (personalizedContent) {
+                        const isAlreadyPersonalized = personalizedContent.movies.some(
+                          personalizedMovie => personalizedMovie.title === movie.movie_name
+                        );
+                        
+                        if (isAlreadyPersonalized) {
+                          return null; // Skip this movie as it's already shown in personalized section
+                        }
+                      }
+                      
+                      return (
+                        <div key={`remaining-${index}`} className="movie-card">
+                          <div className="movie-image">
+                            <img 
+                              src={movie.movie_image.url} 
+                              alt={movie.movie_name}
+                              className="movie-poster"
+                            />
+                          </div>
+                          <div className="movie-info">
+                            <h3 className="movie-title">{movie.movie_name}</h3>
+                            <p className="movie-genre">{movie.movie_description}</p>
+                            <div className="movie-rating">
+                              ⭐ {movie.star_rating.value}/5
+                            </div>
+                            <Link href={`/movies/${movie.movie_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className="book-button">
+                              Book Now
+                            </Link>
+                          </div>
                         </div>
-                        <Link href={`/movies/${movie.movie_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`} className="book-button">
-                          Book Now
-                        </Link>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          )}
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
         </div>
       </main>
       <Footer data={footerData} />

@@ -120,6 +120,10 @@ export class ContentstackPersonalizeAPI {
           const movieCount = personalizedEntry.movies_blocks.length;
           console.log(`✅ Got ${movieCount} movies from personalized entry for ${familyMember.name}`);
           
+          // Get the custom title from the variant
+          const variantTitle = personalizedEntry?.title || 'Personalized Recommendations';
+          console.log(`📝 Using variant title: "${variantTitle}"`);
+          
           // Process the personalized movies
           const processedMovies = personalizedEntry.movies_blocks.map((movie: any) => {
             const movieData = movie.movie_1;
@@ -143,7 +147,10 @@ export class ContentstackPersonalizeAPI {
             success: true,
             memberId: familyMember.id,
             memberName: familyMember.name,
-            personalizedContent: { movies: processedMovies },
+            personalizedContent: { 
+              movies: processedMovies,
+              title: variantTitle
+            },
             recommendations: processedMovies.slice(0, 6),
             watchlist: processedMovies.slice(0, 4),
             recentlyWatched: processedMovies.slice(0, 4),
@@ -198,11 +205,18 @@ export class ContentstackPersonalizeAPI {
       console.log(`📽️ Found ${filteredMovies.length} movies for ${familyMember.name} using variant: ${variantId}`);
       console.log(`🎬 Movies for ${familyMember.name}:`, filteredMovies.map(m => m.title));
 
+      // Get title from the response or use fallback
+      const variantTitle = moviesResponse?.title || 'Personalized Recommendations';
+      console.log(`📝 Using variant title: "${variantTitle}"`);
+
       return {
         success: true,
         memberId: familyMember.id,
         memberName: familyMember.name,
-        personalizedContent: { movies: filteredMovies },
+        personalizedContent: { 
+          movies: filteredMovies,
+          title: variantTitle
+        },
         recommendations: filteredMovies.slice(0, 6),
         watchlist: filteredMovies.slice(0, 4),
         recentlyWatched: filteredMovies.slice(0, 4)

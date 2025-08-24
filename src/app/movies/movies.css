@@ -74,6 +74,20 @@
   stroke-width: 2;
 }
 
+.movies-section {
+  margin-bottom: 3rem;
+}
+
+.section-subtitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f84464;
+  display: inline-block;
+}
+
 .movies-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
