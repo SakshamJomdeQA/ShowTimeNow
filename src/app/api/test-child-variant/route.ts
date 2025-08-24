@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { ContentstackPersonalizeAPI } from '../../../lib/contentstack-personalize-api';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('🧪 Testing Child Variant API');
     
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       memberName: result.memberName,
       movieCount: result.movieCount,
       variantUsed: result.variantUsed,
-      movieTitles: result.personalizedContent?.movies?.map((m: any) => m.title) || []
+      movieTitles: result.personalizedContent?.movies?.map((m: { title: string }) => m.title) || []
     });
 
     return NextResponse.json({
@@ -35,7 +35,16 @@ export async function GET(request: NextRequest) {
         memberName: result.memberName,
         movieCount: result.movieCount,
         variantUsed: result.variantUsed,
-        movies: result.personalizedContent?.movies?.map((m: any) => ({
+        movies: result.personalizedContent?.movies?.map((m: {
+          title: string;
+          genre: string;
+          ageGroup: string;
+          rating: number;
+          image: string;
+          link: string;
+          description: string;
+          personalizedReason: string;
+        }) => ({
           title: m.title,
           genre: m.genre,
           ageGroup: m.ageGroup,

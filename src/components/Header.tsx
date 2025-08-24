@@ -157,7 +157,12 @@ const Header: React.FC<HeaderProps> = ({ data, showAccountSwitcher = true }) => 
   };
 
   // Function to fetch personalized content
-  const fetchPersonalizedContent = async (member: any) => {
+  const fetchPersonalizedContent = async (member: {
+    name: string;
+    age: number;
+    gender: string;
+    preferences: string[];
+  }) => {
     try {
       console.log('🎯 Fetching personalized content for:', member.name);
       

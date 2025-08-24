@@ -1,7 +1,7 @@
 // lib/contentstack.ts
 import contentstack ,{ Region } from '@contentstack/delivery-sdk';
 import Personalize from '@contentstack/personalize-edge-sdk';
-let projectUid = '68946bbedbc98afa6b4150c4';
+const projectUid = '68946bbedbc98afa6b4150c4';
 // Using async-await:
 const personalizeSdk = await Personalize.init(projectUid);
 

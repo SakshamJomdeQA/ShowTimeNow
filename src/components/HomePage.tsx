@@ -122,7 +122,7 @@ const HomePage = () => {
   const [data, setData] = useState<HeaderData | null>(null);
   const [moviesData, setMoviesData] = useState<RecommendedMoviesData | null>(null);
   const [footerData, setFooterData] = useState<FooterData | null>(null);
-  const [selectedFamilyMember, setSelectedFamilyMember] = useState<FamilyMember | null>(null);
+  const [, setSelectedFamilyMember] = useState<FamilyMember | null>(null);
   const [personalizedContent, setPersonalizedContent] = useState<PersonalizedContent | null>(null);
 
   useEffect(() => {

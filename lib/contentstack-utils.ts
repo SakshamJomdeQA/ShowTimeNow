@@ -63,12 +63,18 @@ export async function getEntryWithVariant(contentTypeUid: string, entryUid: stri
     if (variantId) {
       console.log(`🎬 Setting variant ${variantId} for entry ${entryUid}`);
       // Try different approaches to set the variant
-      if ((entry as any).variant) {
-        (entry as any).variant(variantId);
-      } else if ((entry as any).setVariant) {
-        (entry as any).setVariant(variantId);
-      } else if ((entry as any).personalize) {
-        (entry as any).personalize({ variant: variantId });
+      const entryWithVariant = entry as unknown as {
+        variant?: (id: string) => void;
+        setVariant?: (id: string) => void;
+        personalize?: (options: { variant: string }) => void;
+      };
+      
+      if (entryWithVariant.variant) {
+        entryWithVariant.variant(variantId);
+      } else if (entryWithVariant.setVariant) {
+        entryWithVariant.setVariant(variantId);
+      } else if (entryWithVariant.personalize) {
+        entryWithVariant.personalize({ variant: variantId });
       }
     }
     
@@ -77,10 +83,11 @@ export async function getEntryWithVariant(contentTypeUid: string, entryUid: stri
     }
     
     const result = await entry.fetch();
+    const resultWithMovies = result as unknown as { movies_blocks?: unknown[] };
     console.log(`✅ Successfully fetched entry with variant ${variantId}:`, {
       hasData: !!result,
-      hasMoviesBlocks: !!(result as any)?.movies_blocks,
-      movieCount: Array.isArray((result as any)?.movies_blocks) ? (result as any).movies_blocks.length : 0
+      hasMoviesBlocks: !!resultWithMovies?.movies_blocks,
+      movieCount: Array.isArray(resultWithMovies?.movies_blocks) ? resultWithMovies.movies_blocks.length : 0
     });
     return result as ContentstackEntry;
   } catch (error) {

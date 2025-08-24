@@ -215,8 +215,8 @@ function applyPersonalizationFilters(content: MovieContent[], profile: Personali
   return {
     content: sortedContent,
     recommendations: sortedContent.slice(0, 6),
-    watchlist: getWatchlist(content, profile),
-    recentlyWatched: getRecentlyWatched(content, profile)
+    watchlist: getWatchlist(content),
+    recentlyWatched: getRecentlyWatched(content)
   };
 }
 
@@ -248,13 +248,13 @@ function generatePersonalizedReason(movie: any, profile: PersonalizationProfile)
 }
 
 // Get watchlist (mock implementation)
-function getWatchlist(content: MovieContent[], profile: PersonalizationProfile): MovieContent[] {
+function getWatchlist(content: MovieContent[]): MovieContent[] {
   // In real implementation, fetch from user's watchlist
   return content.sort(() => 0.5 - Math.random()).slice(0, 4);
 }
 
 // Get recently watched (mock implementation)
-function getRecentlyWatched(content: MovieContent[], profile: PersonalizationProfile): MovieContent[] {
+function getRecentlyWatched(content: MovieContent[]): MovieContent[] {
   // In real implementation, fetch from user's watch history
   return content.sort(() => 0.5 - Math.random()).slice(0, 4);
 }

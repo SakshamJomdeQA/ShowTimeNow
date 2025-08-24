@@ -31,7 +31,7 @@ interface MovieRecommendation {
 }
 
 const FamilyAccount: React.FC = () => {
-  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([
+  const [familyMembers] = useState<FamilyMember[]>([
     {
       id: '1',
       name: 'John',
@@ -94,7 +94,7 @@ const FamilyAccount: React.FC = () => {
           member: member.name,
           success: content.success,
           recommendationsCount: content.recommendations?.length || 0,
-          movies: content.recommendations?.map((m: any) => m.title) || []
+          movies: content.recommendations?.map((m: { title: string }) => m.title) || []
         });
         setPersonalizedContent(content);
       } else {

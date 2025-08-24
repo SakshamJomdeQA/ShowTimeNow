@@ -311,6 +311,110 @@ export default function MoviePage({ params }: PageProps) {
         duration: '2h 55m',
         rating: '4.5/5',
         releaseYear: '1972'
+      },
+      'Pokemon': {
+        synopsis: 'Join Ash Ketchum and his loyal Pikachu on an epic journey through the Pokemon world. As they travel from region to region, they encounter new Pokemon, make friends, and compete in Pokemon battles to become the ultimate Pokemon Master.',
+        cast: [
+          { role: 'Director', name: 'Kunihiko Yuyama' },
+          { role: 'Ash Ketchum', name: 'Sarah Natochenny' },
+          { role: 'Pikachu', name: 'Ikue Ootani' },
+          { role: 'Producer', name: 'The Pokemon Company' }
+        ],
+        genre: 'Animation, Adventure, Family',
+        duration: '1h 30m',
+        rating: '5.0/5',
+        releaseYear: '1997'
+      },
+      'Jujutsu Kaisen 0': {
+        synopsis: 'Yuta Okkotsu is a nervous high school student who is suffering from a serious problem - his childhood friend Rika has turned into a curse and won\'t leave him alone. When Rika\'s curse takes the life of a classmate, Yuta seeks the help of the Jujutsu High School.',
+        cast: [
+          { role: 'Director', name: 'Sunghoo Park' },
+          { role: 'Yuta Okkotsu', name: 'Megumi Ogata' },
+          { role: 'Rika Orimoto', name: 'Kana Hanazawa' },
+          { role: 'Producer', name: 'MAPPA' }
+        ],
+        genre: 'Action, Animation, Fantasy',
+        duration: '1h 45m',
+        rating: '5.0/5',
+        releaseYear: '2021'
+      },
+      'Demon Slayer': {
+        synopsis: 'Tanjiro Kamado\'s life changes when his family is attacked by demons. With his sister Nezuko turned into a demon, Tanjiro becomes a demon slayer to find a cure and avenge his family. Follow his journey as he battles demons and seeks to turn his sister back into a human.',
+        cast: [
+          { role: 'Director', name: 'Haruo Sotozaki' },
+          { role: 'Tanjiro Kamado', name: 'Natsuki Hanae' },
+          { role: 'Nezuko Kamado', name: 'Akari Kitō' },
+          { role: 'Producer', name: 'ufotable' }
+        ],
+        genre: 'Action, Adventure, Anime',
+        duration: '1h 57m',
+        rating: '5.0/5',
+        releaseYear: '2019'
+      },
+      'The Perks of being a wallflower': {
+        synopsis: 'Charlie, a 15-year-old introvert, enters high school and is nervous about his new life. When he befriends his seniors, he learns to cope with his friend\'s suicide and his tumultuous past.',
+        cast: [
+          { role: 'Director', name: 'Stephen Chbosky' },
+          { role: 'Charlie', name: 'Logan Lerman' },
+          { role: 'Sam', name: 'Emma Watsons' },
+          { role: 'Patrick', name: 'Ezra Miller' }
+        ],
+        genre: 'Drama, Romance',
+        duration: '1h 43m',
+        rating: '4.0/5',
+        releaseYear: '2012'
+      },
+      'Barbie': {
+        synopsis: 'Barbie suffers a crisis that leads her to question her world and her existence. She sets out on a journey of self-discovery, encountering new friends and challenges along the way that help her understand what it truly means to be human.',
+        cast: [
+          { role: 'Director', name: 'Greta Gerwig' },
+          { role: 'Barbie', name: 'Margot Robbie' },
+          { role: 'Ken', name: 'Ryan Gosling' },
+          { role: 'Producer', name: 'Margot Robbie' }
+        ],
+        genre: 'Adventure, Comedy, Fantasy',
+        duration: '1h 54m',
+        rating: '4.5/5',
+        releaseYear: '2023'
+      },
+      '2 States': {
+        synopsis: 'Krish and Ananya meet at IIM Ahmedabad and fall in love. However, their relationship faces cultural barriers as they come from different states in India. They must convince their families to accept their love and get married.',
+        cast: [
+          { role: 'Director', name: 'Abhishek Varman' },
+          { role: 'Krish Malhotra', name: 'Arjun Kapoor' },
+          { role: 'Ananya Swaminathan', name: 'Alia Bhatt' },
+          { role: 'Producer', name: 'Karan Johar' }
+        ],
+        genre: 'Comedy, Drama, Romance',
+        duration: '2h 29m',
+        rating: '4.0/5',
+        releaseYear: '2014'
+      },
+      'F1 - Movie': {
+        synopsis: 'A thrilling journey into the world of Formula 1 racing, showcasing the speed, danger, and glamour of the sport. Follow the lives of drivers, engineers, and team principals as they compete for the ultimate prize in motorsport.',
+        cast: [
+          { role: 'Director', name: 'Joseph Kosinski' },
+          { role: 'Lead Driver', name: 'Brad Pitt' },
+          { role: 'Team Principal', name: 'Lewis Hamilton' },
+          { role: 'Producer', name: 'Jerry Bruckheimer' }
+        ],
+        genre: 'Action, Drama, Sports',
+        duration: '2h 15m',
+        rating: '4.5/5',
+        releaseYear: '2024'
+      },
+      'F1 : The Movie': {
+        synopsis: 'Experience the thrill of Formula 1 racing in this action-packed movie that takes you behind the scenes of the world\'s most prestigious motorsport. Follow the journey of drivers, teams, and the intense competition that defines F1.',
+        cast: [
+          { role: 'Director', name: 'Ron Howard' },
+          { role: 'Lead Actor', name: 'Daniel Brühl' },
+          { role: 'Supporting Actor', name: 'Chris Hemsworth' },
+          { role: 'Producer', name: 'Brian Grazer' }
+        ],
+        genre: 'Action, Drama, Sports',
+        duration: '2h 3m',
+        rating: '4.5/5',
+        releaseYear: '2013'
       }
     };
 

@@ -52,7 +52,7 @@ const RecommendedMovies: React.FC<RecommendedMoviesProps> = ({ data, personalize
   };
 
   // Use personalized content if available, otherwise use default data
-  const moviesToShow = personalizedContent?.movies || data?.movies_blocks || [];
+  // const moviesToShow = personalizedContent?.movies || data?.movies_blocks || [];
   const sectionTitle = personalizedContent ? 'Personalized Recommendations' : (data?.title || 'Recommended Movies');
 
   if (!data && !personalizedContent) {

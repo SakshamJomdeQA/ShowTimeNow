@@ -1,4 +1,4 @@
-import { PERSONALIZE_CONFIG, PERSONALIZE_ENDPOINTS, PersonalizeRequest, PersonalizeResponse } from './contentstack-personalize-config';
+import { PERSONALIZE_CONFIG } from './contentstack-personalize-config';
 import { personalizeSdk } from '../../lib/contentstack';
 
 export class ContentstackPersonalizeAPI {

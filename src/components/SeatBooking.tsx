@@ -13,7 +13,7 @@ interface SeatBookingProps {
 
 interface SeatData {
   single_line: string;
-  select_seats: any;
+  select_seats: unknown;
   prime: string;
   classic: string;
   classic_plus: string;
@@ -28,7 +28,7 @@ const SeatBooking: React.FC<SeatBookingProps> = ({
   showtime,
   format
 }) => {
-  const [seatData, setSeatData] = useState<SeatData | null>(null);
+  const [, setSeatData] = useState<SeatData | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<number>(0);
   const [selectedType, setSelectedType] = useState<'classic' | 'classic_plus' | 'prime'>('classic');
   const [bookingStep, setBookingStep] = useState<'seats' | 'email' | 'confirmation'>('seats');
@@ -371,7 +371,7 @@ ShowTimeNow Team
                 {emailError && <div className={styles.errorMessage}>{emailError}</div>}
               </div>
               <div className={styles.emailNote}>
-                <p>We'll send your booking confirmation and tickets to this email address.</p>
+                <p>We&apos;ll send your booking confirmation and tickets to this email address.</p>
               </div>
             </div>
 
